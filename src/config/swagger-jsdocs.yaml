@@ -1,0 +1,146 @@
+openapi: 3.0.0
+info:
+  title: Persons API
+  version: 1.0.0
+  description: API de personas
+servers:
+  - url: http://localhost:{port}
+    variables:
+      port:
+        default: '3000'
+        description: Puerto del servidor
+
+paths:
+  /api/persons/{idType}/{idNumber}:
+    get:
+      summary: Obtener persona por tipo y número de documento
+      tags:
+        - Persons
+      parameters:
+        - in: path
+          name: idType
+          schema:
+            type: string
+          required: true
+          description: Tipo de identificación
+        - in: path
+          name: idNumber
+          schema:
+            type: string
+          required: true
+          description: Número de identificación
+      responses:
+        '200':
+          description: Persona encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Person'
+        '404':
+          description: Persona no encontrada
+    patch:
+      summary: Actualizar persona por tipo y número de documento
+      tags:
+        - Persons
+      parameters:
+        - in: path
+          name: idType
+          schema:
+            type: string
+          required: true
+          description: Tipo de identificación
+        - in: path
+          name: idNumber
+          schema:
+            type: string
+          required: true
+          description: Número de identificación
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePersonDto'
+      responses:
+        '200':
+          description: Persona actualizada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Person'
+        '400':
+          description: Datos inválidos
+        '404':
+          description: Persona no encontrada
+  /api/persons:
+    post:
+      summary: Crear una nueva persona
+      tags:
+        - Persons
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePersonDto'
+      responses:
+        '201':
+          description: Persona creada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Person'
+        '400':
+          description: Datos inválidos
+  /api/persons/blacklist/{idType}/{idNumber}:
+    get:
+      summary: Consultar si una persona está en lista negra
+      tags:
+        - Persons
+      parameters:
+        - in: path
+          name: idType
+          schema:
+            type: string
+          required: true
+          description: Tipo de identificación
+        - in: path
+          name: idNumber
+          schema:
+            type: string
+          required: true
+          description: Número de identificación
+      responses:
+        '200':
+          description: Estado de lista negra
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  isBlacklisted:
+                    type: boolean
+                    description: Indica si la persona está en lista negra
+        '404':
+          description: Persona no encontrada
+
+  /api/document-types/list:
+    get:
+      summary: Obtener todos los tipos de documento
+      tags:
+        - DocumentTypes
+      responses:
+        '200':
+          description: Lista de tipos de documento
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DocumentType'
+
+tags:
+  - name: Persons
+    description: Operaciones relacionadas con personas
+  - name: DocumentTypes
+    description: Operaciones relacionadas con tipos de documento
